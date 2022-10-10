@@ -1,4 +1,4 @@
-#
+   #
 # Copyright (C) 2021-2022 by TeamYukki@Github, < https://github.com/TeamYukki >.
 #
 # This file is part of < https://github.com/TeamYukki/YukkiMusicBot > project,
@@ -20,6 +20,7 @@ from pyrogram.types import (InlineKeyboardButton,
 from config import (BANNED_USERS, SONG_DOWNLOAD_DURATION,
                     SONG_DOWNLOAD_DURATION_LIMIT)
 from strings import get_command
+from strings.filters import command
 from YukkiMusic import YouTube, app
 from YukkiMusic.utils.decorators.language import language, languageCB
 from YukkiMusic.utils.formatters import convert_bytes
@@ -30,7 +31,13 @@ SONG_COMMAND = get_command("SONG_COMMAND")
 
 
 @app.on_message(
-    filters.command(SONG_COMMAND)
+    filters.command(SONG_COMMAND)   
+    & filters.group
+    & ~filters.edited
+    & ~BANNED_USERS
+)
+@app.on_message(
+    command(["تحميل","بحث"])
     & filters.group
     & ~filters.edited
     & ~BANNED_USERS
@@ -55,6 +62,12 @@ async def song_commad_group(client, message: Message, _):
 
 @app.on_message(
     filters.command(SONG_COMMAND)
+    & filters.private
+    & ~filters.edited
+    & ~BANNED_USERS
+)
+@app.on_message(
+    command(["تحميل","بحث"])
     & filters.private
     & ~filters.edited
     & ~BANNED_USERS
@@ -309,4 +322,4 @@ async def song_download_cb(client, CallbackQuery, _):
         except Exception as e:
             print(e)
             return await mystic.edit_text(_["song_10"])
-        os.remove(filename)
+        os.remove(filename)       
